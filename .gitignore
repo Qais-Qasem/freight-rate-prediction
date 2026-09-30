@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+outputs/final_model.joblib
+scorer_results/
