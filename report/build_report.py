@@ -120,7 +120,7 @@ pdf.b(
  "CatBoost log-target + RMSE loss: mean MAE 113.2 (folds 128.9 / 100.5 / 110.3).\n"
  "Lesson: the log transform already converts absolute errors into relative ones "
  "(log y - log yhat = log(y/yhat)) and damps the corrupted labels, so L1 adds "
- "little while being harder to optimize — L1 has a constant gradient (+-1) and "
+ "little while being harder to optimize - L1 has a constant gradient (+/-1) and "
  "zero Hessian, which starves the Newton-style leaf splits that symmetric "
  "(oblivious) trees rely on, hence ~1000 slow iterations vs ~300 for RMSE. "
  "CatBoost-RMSE is marginally best (113.2 vs 116.0, ~2.4%), but on a single seed "
