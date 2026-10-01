@@ -112,7 +112,24 @@ if CHART.exists():
 else:
     pdf.b("[chart missing: run score.py first]")
 
-pdf.heading("7. Reproduce")
+pdf.heading("7. Post-baseline experiments (not shipped)")
+pdf.b(
+ "After freezing the submission we tested CatBoost on the identical 3 folds "
+ "and features (catboost 1.2.10, seed 0, time-tail eval split + early stopping):\n"
+ "CatBoost log-target + MAE loss: mean MAE 126.2 (folds 138.1 / 121.8 / 118.8).\n"
+ "CatBoost log-target + RMSE loss: mean MAE 113.2 (folds 128.9 / 100.5 / 110.3).\n"
+ "Lesson: the log transform already converts absolute errors into relative ones "
+ "(log y - log yhat = log(y/yhat)) and damps the corrupted labels, so L1 adds "
+ "little while being harder to optimize — L1 has a constant gradient (+-1) and "
+ "zero Hessian, which starves the Newton-style leaf splits that symmetric "
+ "(oblivious) trees rely on, hence ~1000 slow iterations vs ~300 for RMSE. "
+ "CatBoost-RMSE is marginally best (113.2 vs 116.0, ~2.4%), but on a single seed "
+ "that gap may be noise, so the validated LGBM-L1 pipeline stays the submission. "
+ "A 50/50 LGBM + CatBoost-RMSE average is the natural next step: leaf-wise/L1 "
+ "vs symmetric/L2 gives structurally diverse residuals."
+)
+
+pdf.heading("8. Reproduce")
 pdf.b(
  "pip install -r requirements.txt\n"
  "python -m src.validate\n"
