@@ -4,3 +4,4 @@ __pycache__/
 venv/
 outputs/final_model.joblib
 scorer_results/
+catboost_info/
