@@ -20,12 +20,17 @@ class PDF(FPDF):
     def heading(self, t):
         self.set_font("Helvetica", "B", 12)
         self.set_text_color(20, 20, 20)
-        self.cell(0, 8, t, new_x="LMARGIN", new_y="NEXT")
+        self.cell(0, 8, t, new_x="LMARGIN", new_y="NEXT", align="L")
 
     def b(self, t):
         self.set_font("Helvetica", "", 10)
         self.set_text_color(40, 40, 40)
-        self.multi_cell(0, 5.2, t)
+        self.multi_cell(0, 5.2, t, new_x="LMARGIN", new_y="NEXT", align="L")
+
+    def mono(self, t, size=7.5, h=4.0):
+        self.set_font("Courier", "", size)
+        self.set_text_color(40, 40, 40)
+        self.multi_cell(0, h, t, new_x="LMARGIN", new_y="NEXT", align="L")
 
 pdf = PDF()
 pdf.set_auto_page_break(True, 15)
@@ -79,16 +84,13 @@ pdf.b(
 
 pdf.heading("5. CV results (temporal folds)")
 tbl = cv.round(2).to_string(index=False)
-pdf.set_font("Courier", "", 7.5)
-pdf.multi_cell(0, 4, tbl)
+pdf.mono(tbl, size=7.5, h=4.0)
 pdf.ln(2)
 pdf.set_font("Helvetica", "B", 10)
-pdf.cell(0, 6, "Mean over folds:", new_x="LMARGIN", new_y="NEXT")
-pdf.set_font("Courier", "", 8)
-pdf.multi_cell(0, 4.5, mean.to_string())
+pdf.cell(0, 6, "Mean over folds:", new_x="LMARGIN", new_y="NEXT", align="L")
+pdf.mono(mean.to_string(), size=8, h=4.5)
 pdf.ln(1)
-pdf.set_font("Helvetica", "", 10)
-pdf.multi_cell(0, 5.2,
+pdf.b(
  "Winner: lgbm-logL1 (mean MAE 115.96, MAPE 4.94) vs ridge-log (118.67 / 5.03), "
  "hgb-logL2 (134.33 / 5.74), naive median $/mile (219.34 / 10.53). "
  "Fold3 (Sep-Oct, best Nov-Dec proxy): lgbm MAE 106.5 / MAPE 4.66. "
