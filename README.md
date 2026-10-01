@@ -44,4 +44,7 @@ Outputs:
 - **Model:** LightGBM `regression_l1` on log-target, time-tail eval split + early stopping. Final model trains on all Jan–Oct.
 - **December:** coords from train city medians; market per-day means from `validation.csv` (input features, cover all Dec dates); quote = December median (~2.05). Documented in `report/report.pdf`.
 
-See `report/report.pdf` and `notebooks/01_eda.ipynb` for details.
+See `report/report.pdf` and the executed notebooks for details:
+- `notebooks/01_eda.ipynb` — EDA summary
+- `notebooks/02_data_quality_proofs.ipynb` — evidence for every data-quality claim (caps, floor, U-shape, drift)
+- `notebooks/03_experiments.ipynb` — RMSE decomposition + CatBoost log/MAE vs log/RMSE (reproduces report section 7)
