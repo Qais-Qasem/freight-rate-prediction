@@ -48,3 +48,5 @@ See `report/report.pdf` and the executed notebooks for details:
 - `notebooks/01_eda.ipynb` — EDA summary
 - `notebooks/02_data_quality_proofs.ipynb` — evidence for every data-quality claim (caps, floor, U-shape, drift)
 - `notebooks/03_experiments.ipynb` — RMSE decomposition + CatBoost log/MAE vs log/RMSE (reproduces report section 7)
+
+Note: LightGBM multithreading causes about ±$1 run-to-run prediction jitter at fixed seed; CV metrics and model ranking are unaffected.

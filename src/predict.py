@@ -55,6 +55,9 @@ def main() -> None:
     train["date"] = pd.to_datetime(train["date"])
     val["date"] = pd.to_datetime(val["date"])
     dec["date"] = pd.to_datetime(dec["date"])
+    # NOTE: fit_full() takes its eval split as the LAST rows, assuming time
+    # order. Never rely on file order: sort explicitly (no-op today, insurance).
+    train = train.sort_values("date").reset_index(drop=True)
 
     # --- fit cleaning/feature stats on TRAIN only ---
     median_w = float(train["weight"].abs().median())
@@ -112,7 +115,8 @@ def main() -> None:
     dec_exp["quote_signal"] = q_dec
     print(f"December imputation: quote_signal={q_dec:.4f} (Dec median from validation)")
 
-    dec_c = clean_frame(dec_exp, median_w, daily_med_tr, global_med)
+    # (no-op: dec market has no NaN; None avoids the stale-map trap by construction)
+    dec_c = clean_frame(dec_exp, median_w, None, global_med)
     dec_c["market_index"] = dec_exp["market_index"]  # keep day-mean, not NaN-fill noise
     dec_c["mi_missing"] = 1  # flag: december file ships without market data
     dec_f = build_features(dec_c, q_med, full_daily)

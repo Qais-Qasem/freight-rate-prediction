@@ -63,8 +63,11 @@ def add_geo_features(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def add_market_smooth(df: pd.DataFrame, daily_med: pd.Series) -> pd.DataFrame:
-    """Map each row to its calendar-day median market index (7-day rolling
-    mean applied where a full date range exists; otherwise raw daily median)."""
+    """Map each row to its calendar-day median market index.
+
+    The daily median kills within-day noise (~0.025); rows whose date has no
+    entry fall back to their own market_index value.
+    """
     out = df.copy()
     day_key = pd.to_datetime(out["date"]).dt.strftime("%Y-%m-%d")
     out["mi_smooth"] = day_key.map(daily_med).astype(float)

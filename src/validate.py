@@ -18,6 +18,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from sklearn.ensemble import HistGradientBoostingRegressor
 from sklearn.linear_model import Ridge
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -100,9 +101,7 @@ def main() -> None:
             {"fold": i, "model": "ridge-log", **metrics(yte, np.expm1(ridge.predict(Xte)))}
         )
 
-        # 3) LightGBM L1 on log
-        from sklearn.ensemble import HistGradientBoostingRegressor
-
+        # 3) HistGradientBoosting (L2 on log) as a second reference
         hgb = HistGradientBoostingRegressor(
             loss="squared_error",
             max_iter=400,
