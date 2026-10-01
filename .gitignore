@@ -2,6 +2,7 @@ __pycache__/
 *.pyc
 .venv/
 venv/
+.vscode/
 outputs/final_model.joblib
 scorer_results/
 catboost_info/
