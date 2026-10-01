@@ -139,5 +139,7 @@ pdf.b(
 )
 
 OUT.mkdir(parents=True, exist_ok=True)
-pdf.output(str(OUT / "report.pdf"))
-print(f"Saved -> {OUT / 'report.pdf'}")
+import os as _os
+_out_pdf = _os.environ.get("REPORT_PDF", str(OUT / "report.pdf"))
+pdf.output(_out_pdf)
+print(f"Saved -> {_out_pdf}")
