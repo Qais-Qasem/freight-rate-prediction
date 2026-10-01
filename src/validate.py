@@ -75,7 +75,11 @@ def main() -> None:
         q_med = float(dtr["quote_signal"].median())
 
         dtr_c = clean_frame(dtr, median_w, daily_med, global_med)
-        dte_c = clean_frame(dte, median_w, daily_med, global_med)
+        # NOTE: test fold uses its OWN daily medians (daily_med=None) because the
+        # fold-train calendar never contains the test dates, so the map would miss
+        # every row and silently fall back to global_med. market_index is an input
+        # feature (not the label), so same-day peer medians are legitimate.
+        dte_c = clean_frame(dte, median_w, None, global_med)
         # smooth maps: fold-train calendar for train rows; combined for test rows
         full_daily = pd.concat([dtr_c, dte_c]).groupby(
             pd.to_datetime(pd.concat([dtr_c, dte_c])["date"]).dt.strftime("%Y-%m-%d")

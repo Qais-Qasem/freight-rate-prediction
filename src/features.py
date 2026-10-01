@@ -27,6 +27,7 @@ FEATURE_COLS = [
     "weight_missing",
     "weight_capped",
     "weight_was_negative",
+    "dist_floor",
     "market_index",
     "mi_missing",
     "mi_smooth",

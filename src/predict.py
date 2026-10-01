@@ -65,8 +65,11 @@ def main() -> None:
     train_c = clean_frame(train, median_w, daily_med_tr, global_med)
 
     # market smooth map: train days from train; Nov-Dec days from validation
-    # (validation market_index values are input features, not labels)
-    val_c_tmp = clean_frame(val, median_w, daily_med_tr, global_med)
+    # (validation market_index values are input features, not labels).
+    # NOTE: validation rows are cleaned with their OWN daily medians
+    # (daily_med=None): the train calendar (Jan-Oct) contains no Nov-Dec date,
+    # so the train map would miss every NaN row and fall back to global_med.
+    val_c_tmp = clean_frame(val, median_w, None, global_med)
     combined = pd.concat([train_c, val_c_tmp], ignore_index=True)
     full_daily = combined.groupby(
         pd.to_datetime(combined["date"]).dt.strftime("%Y-%m-%d")
@@ -84,8 +87,8 @@ def main() -> None:
     )
     model.booster_.save_model(str(OUT / "final_model.txt"))
 
-    # --- validation predictions ---
-    val_c = clean_frame(val, median_w, daily_med_tr, global_med)
+    # --- validation predictions (own daily medians, see note above) ---
+    val_c = clean_frame(val, median_w, None, global_med)
     val_f = build_features(val_c, q_med, full_daily)
     p_val = np.clip(np.expm1(model.predict(feature_matrix(val_f).to_numpy())), 1.0, None)
     pred = pd.DataFrame({"load_id": val["load_id"], "predicted_rate": p_val.round(2)})

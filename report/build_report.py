@@ -55,7 +55,9 @@ pdf.heading("2. Data-quality issues & fixes")
 pdf.b(
  "- weight: 300 NaN (flag + median), 292 negative -> abs() (sign-entry error), "
  "1204 capped at 47500 (flag).\n"
- "- market_index: 374 NaN train / 249 val -> same-day median, fallback global median (+ missing flag). "
+ "- market_index: 374 NaN train / 249 val -> same-day median from the same table's own calendar "
+ "(the Jan-Oct train map contains no Nov-Dec date, so validation/test folds use their own days; "
+ "market is an input feature, not the label, so this is not leakage), fallback global median (+ missing flag). "
  "Within-day noise ~0.025 so daily median denoises safely.\n"
  "- distance: 48 rows floored at 70.0 (flag).\n"
  "- posted_rate: ~1.4% outliers (x3 or /3) -> kept; robust L1 loss on log-target handles them.\n"
@@ -91,9 +93,9 @@ pdf.cell(0, 6, "Mean over folds:", new_x="LMARGIN", new_y="NEXT", align="L")
 pdf.mono(mean.to_string(), size=8, h=4.5)
 pdf.ln(1)
 pdf.b(
- "Winner: lgbm-logL1 (mean MAE 115.96, MAPE 4.94) vs ridge-log (118.67 / 5.03), "
- "hgb-logL2 (134.33 / 5.74), naive median $/mile (219.34 / 10.53). "
- "Fold3 (Sep-Oct, best Nov-Dec proxy): lgbm MAE 106.5 / MAPE 4.66. "
+ "Winner: lgbm-logL1 (mean MAE 115.95, MAPE 4.94) vs ridge-log (118.63 / 5.03), "
+ "hgb-logL2 (133.47 / 5.73), naive median $/mile (219.34 / 10.53). "
+ "Fold3 (Sep-Oct, best Nov-Dec proxy): lgbm MAE 106.6 / MAPE 4.67. "
  "Final model retrained on all Jan-Oct with a time-tail eval split + early stopping (seed 0)."
 )
 
@@ -118,22 +120,22 @@ pdf.heading("7. Post-baseline experiments (not shipped)")
 pdf.b(
  "After freezing the submission we tested CatBoost on the identical 3 folds "
  "and features (catboost 1.2.10, seed 0, time-tail eval split + early stopping):\n"
- "CatBoost log-target + MAE loss: mean MAE 126.2 (folds 138.1 / 121.8 / 118.8).\n"
- "CatBoost log-target + RMSE loss: mean MAE 113.2 (folds 128.9 / 100.5 / 110.3).\n"
+ "CatBoost log-target + MAE loss: mean MAE 126.2 (folds 134.6 / 124.5 / 119.6).\n"
+ "CatBoost log-target + RMSE loss: mean MAE 114.8 (folds 128.8 / 103.4 / 112.3).\n"
  "Lesson: the log transform already converts absolute errors into relative ones "
  "(log y - log yhat = log(y/yhat)) and damps the corrupted labels, so L1 adds "
  "little while being harder to optimize - L1 has a constant gradient (+/-1) and "
  "zero Hessian, which starves the Newton-style leaf splits that symmetric "
  "(oblivious) trees rely on, hence ~1000 slow iterations vs ~300 for RMSE. "
- "CatBoost-RMSE is marginally best (113.2 vs 116.0, ~2.4%), but on a single seed "
+ "CatBoost-RMSE is marginally best (114.8 vs 116.0, ~1.0%), but on a single seed "
  "that gap may be noise, so the validated LGBM-L1 pipeline stays the submission. "
  "A 50/50 LGBM + CatBoost-RMSE average is the natural next step: leaf-wise/L1 "
  "vs symmetric/L2 gives structurally diverse residuals."
 )
 pdf.b(
- "RMSE decomposition (Fold3, submitted model, 9,523 rows): all rows MAE 106.5 / "
- "RMSE 633.9 / MAPE 4.66%; after dropping only the worst 1.5% absolute errors: "
- "MAE 50.5 / RMSE 74.0 / MAPE 2.32%. The 8 worst rows pair true rates of "
+ "RMSE decomposition (Fold3, submitted model, 9,523 rows): all rows MAE 106.6 / "
+ "RMSE 633.9 / MAPE 4.67%; after dropping only the worst 1.5% absolute errors: "
+ "MAE 50.7 / RMSE 74.1 / MAPE 2.33%. The 8 worst rows pair true rates of "
  "13k-20k dollars against sane predictions of 3k-6k (about 2 $/mile on normal "
  "1,400-3,000 mile hauls): corrupted labels (x3-x5), not model errors. "
  "Conclusion: RMSE ~630 is a property of the labels, handled by L1+log "
