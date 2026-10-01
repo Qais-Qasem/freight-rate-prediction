@@ -130,6 +130,16 @@ pdf.b(
  "A 50/50 LGBM + CatBoost-RMSE average is the natural next step: leaf-wise/L1 "
  "vs symmetric/L2 gives structurally diverse residuals."
 )
+pdf.b(
+ "RMSE decomposition (Fold3, submitted model, 9,523 rows): all rows MAE 106.5 / "
+ "RMSE 633.9 / MAPE 4.66%; after dropping only the worst 1.5% absolute errors: "
+ "MAE 50.5 / RMSE 74.0 / MAPE 2.32%. The 8 worst rows pair true rates of "
+ "13k-20k dollars against sane predictions of 3k-6k (about 2 $/mile on normal "
+ "1,400-3,000 mile hauls): corrupted labels (x3-x5), not model errors. "
+ "Conclusion: RMSE ~630 is a property of the labels, handled by L1+log "
+ "robustness during training; deleting high-error rows would be tuning by "
+ "deletion, so the metric is reported honestly as-is."
+)
 
 pdf.heading("8. Reproduce")
 pdf.b(
